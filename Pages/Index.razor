@@ -1,0 +1,38 @@
+﻿@page "/"
+
+@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="@exampleModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator/>
+
+    <InputText id="name" @bind-Value="exampleModel.Name"/>
+    <button type="submit">Submit</button>
+</EditForm>
+
+@code {
+
+    public class CustomValidationAttribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            IFakeService service = (IFakeService) validationContext.GetService(typeof(IFakeService));
+            Console.WriteLine(service);
+            Console.WriteLine(service.Hi);
+            return ValidationResult.Success;
+        }
+    }
+
+    public class ExampleModel
+    {
+        [CustomValidationAttribute]
+        public string Name { get; set; }
+    }
+
+    private ExampleModel exampleModel = new ExampleModel();
+
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+    }
+
+}
